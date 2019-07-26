@@ -3,6 +3,9 @@ package com.tensquare.base.service;
 import com.tensquare.base.dao.LabelDao;
 import com.tensquare.base.pojo.Label;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import util.IdWorker;
@@ -59,23 +62,49 @@ public class LabelService {
         labelDao.deleteById(id);
     }
 
-    public List<Label> findSearch(Label label){
-        return labelDao.findAll(new Specification<Label>() {
+    /**
+     * 查询
+     * @param label
+     * @return
+     */
+    private Specification<Label> createSpecification(Label label){
+        return new Specification<Label>() {
             @Override
-            public Predicate toPredicate(Root<Label> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> list = new ArrayList<>();
-                if(label.getLabelname()!=null&&!"".equals(label.getLabelname())) {
-                    Predicate predicate = cb.like(root.get("labelname").as(String.class), "%" + label.getLabelname() + "%");
-                    list.add(predicate);
+            public Predicate toPredicate(Root<Label> root, CriteriaQuery<?>
+                    criteriaQuery, CriteriaBuilder cb) {
+                List<Predicate> predicateList=new ArrayList<>();
+                if(label.getLabelname()!=null &&
+                        !"".equals(label.getLabelname())){
+                    predicateList.add(cb.like(
+                            root.get("labelname").as(String.class), "%"+
+                                    label.getLabelname()+"%" ) );
                 }
-                if(label.getState()!=null&&!"".equals(label.getState())){
-                    Predicate predicate = cb.equal(root.get("state").as(String.class),  label.getState());
-                    list.add(predicate);
+                if(label.getState()!=null &&
+                        !"".equals(label.getState())){
+                    predicateList.add(cb.equal(
+                            root.get("state").as(String.class), label.getState() ) );
                 }
-                Predicate[] parr = new Predicate[list.size()];
-                list.toArray(parr);
-                return cb.and(parr);
+                if(label.getRecommend()!=null &&
+                        !"".equals(label.getRecommend())){
+                    predicateList.add(cb.equal(
+                            root.get("recommend").as(String.class),
+                            label.getRecommend() ) );
+                }
+                return cb.and( predicateList.toArray( new
+                        Predicate[predicateList.size()]) );
             }
-        });
+        };
+    }
+
+    public List<Label> findSearch(Label label){
+        Specification specification = createSpecification(label);
+        return labelDao.findAll(specification);
+    }
+
+    public Page<Label> pageQuery(Label label, int page, int size){
+        Specification specification = createSpecification(label);
+        Pageable pageable = PageRequest.of(page-1,size);
+        PageRequest pageRequest = PageRequest.of(page,size);
+        return labelDao.findAll(specification,pageable);
     }
 }
