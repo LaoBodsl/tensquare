@@ -7,7 +7,10 @@ import entity.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import util.IdWorker;
@@ -22,6 +25,9 @@ public class SpitService {
 
     @Autowired
     private IdWorker idWorker;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     public List<Spit> findAll(){
         return spitDao.findAll();
@@ -52,5 +58,14 @@ public class SpitService {
     public Page<Spit> findByParentid(String parentid, int page, int size){
         PageRequest pageRequest = PageRequest.of(page-1,size);
         return spitDao.findByParentid(parentid,pageRequest);
+    }
+
+    public void updateThumbup(String id){
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(id));
+        Update update = new Update();
+        update.inc("thumbup",1);
+        mongoTemplate.updateFirst(query,update,"spit");
+
     }
 }
