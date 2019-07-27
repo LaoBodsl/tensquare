@@ -5,6 +5,9 @@ import com.tensquare.spit.pojo.Spit;
 import entity.Result;
 import entity.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import util.IdWorker;
@@ -44,5 +47,10 @@ public class SpitService {
 
     public void deleteById(String id){
         spitDao.deleteById(id);
+    }
+
+    public Page<Spit> findByParentid(String parentid, int page, int size){
+        PageRequest pageRequest = PageRequest.of(page-1,size);
+        return spitDao.findByParentid(parentid,pageRequest);
     }
 }

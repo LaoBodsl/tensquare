@@ -3,9 +3,12 @@ package com.tensquare.spit.controller;
 
 import com.tensquare.spit.pojo.Spit;
 import com.tensquare.spit.service.SpitService;
+import entity.PageResult;
 import entity.Result;
 import entity.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -36,7 +39,7 @@ public class SpitController {
     }
 
 
-    @RequestMapping(value = "/{spitId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/{spitId}", method = RequestMethod.PUT)
     public Result update(@RequestBody Spit spit, @PathVariable String spitId){
         spit.set_id(spitId);
         spitService.update(spit);
@@ -50,4 +53,9 @@ public class SpitController {
         return new Result(true,StatusCode.OK,"删除成功");
     }
 
+    @RequestMapping(value = "/comment/{parentid}/{page}/{size}",method = RequestMethod.GET)
+    public Result findByParentid(@PathVariable String parentid, @PathVariable int page, @PathVariable int size){
+        Page<Spit> pagedate = spitService.findByParentid(parentid,page,size);
+        return new Result(true,StatusCode.OK,"查询成功",new PageResult<Spit>(pagedate.getTotalElements(),pagedate.getContent()));
+    }
 }
