@@ -12,9 +12,13 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
+import entity.PageResult;
+import entity.Result;
+import entity.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -43,6 +47,21 @@ public class ProblemService {
 	 * 查询全部列表
 	 * @return
 	 */
+	public Page<Problem> newlist(String labelid, int page, int rows){
+		Pageable pageable = PageRequest.of(page-1,rows);
+		return problemDao.newlist(labelid,pageable);
+	}
+
+	public Page<Problem> hotlist(String labelid, int page, int rows){
+		Pageable pageable = PageRequest.of(page-1,rows);
+		return problemDao.hotlist(labelid,pageable);
+	}
+
+	public Page<Problem> waitlist(String labelid, int page, int rows){
+		Pageable pageable = PageRequest.of(page-1,rows);
+		return problemDao.waitlist(labelid,pageable);
+	}
+
 	public List<Problem> findAll() {
 		return problemDao.findAll();
 	}
