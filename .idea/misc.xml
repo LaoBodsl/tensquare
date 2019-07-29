@@ -10,6 +10,7 @@
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/tensquare_search/pom.xml" />
+        <option value="$PROJECT_DIR$/tensquare_user/tensquare_sms/pom.xml" />
       </set>
     </option>
   </component>
