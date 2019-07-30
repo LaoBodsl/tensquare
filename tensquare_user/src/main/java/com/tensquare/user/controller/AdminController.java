@@ -29,6 +29,17 @@ public class AdminController {
 
 	@Autowired
 	private AdminService adminService;
+
+
+	@RequestMapping(value = "/login",method = RequestMethod.POST)
+	public Result login(@RequestBody Map<String,String> loginMap){
+		Admin admin = adminService.findByLoginnameAndPassword(loginMap.get("loginname"),loginMap.get("password"));
+		if(admin!=null) {
+			return new Result(true, StatusCode.OK, "登录成功");
+		}else {
+			return new Result(false,StatusCode.ERROR,"登录失败");
+		}
+	}
 	
 	
 	/**
